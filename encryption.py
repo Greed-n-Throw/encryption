@@ -1,4 +1,4 @@
-def code_de_zinzin(sentence: str, encryption_key: str):
+def encryption(sentence: str, encryption_key: str):
     sentence_int = []
     for character in sentence:
         letter = 0
@@ -39,7 +39,7 @@ def code_de_zinzin(sentence: str, encryption_key: str):
     return (phrase_encrypt)
 
 
-def decode_de_zinzin(sentence: str, encryption_key: str):
+def unencryption(sentence: str, encryption_key: str):
     sentence_int = []
     for character in sentence:
         letter = 0
@@ -83,9 +83,9 @@ def decode_de_zinzin(sentence: str, encryption_key: str):
 sentence = ("this is a test with this code only spaces and lowercases letters can be encrypted")
 cryptage_key = ("cryptage key")
 
-code = code_de_zinzin(sentence, cryptage_key)
+code = encryption(sentence, cryptage_key)
 
-decode = decode_de_zinzin(code, cryptage_key)
+decode = unencryption(code, cryptage_key)
 
 print(code)
 print(decode)
