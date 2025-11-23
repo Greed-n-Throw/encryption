@@ -1,58 +1,44 @@
-def convert_str_into_digit_list(string: str) -> list[int]:
-    int_list = []
-    for char in string:
-        int_list.append(0 if ord(char) == 32 else ord(char) - 96)  # 32 code ASCII for space, 97 for a
-
-    return int_list
+from itertools import cycle
 
 
-def convert_digit_list_into_str(int_list: list[int]) -> str:
-    str_list = []
-    for digit in int_list:
-        str_list.append(chr(32) if digit == 0 else chr(digit + 96))
+class Encryption:
+    def __init__(self, missings_char: str = "") -> None:
+        self._int_to_char: str = ",?;.:/!'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz0123456789" + missings_char
+        self._size: int = len(self._int_to_char)
+        self._char_to_int: dict = {c: i for i, c in enumerate(self._int_to_char)}
 
-    return "".join(str_list)
+    def _str_to_ints(self, sentence: str) -> list[int]:
+        return [self._char_to_int[c] for c in sentence]
 
+    def _ints_to_str(self, ints: list[int]) -> str:
+        return "".join(self._int_to_char[v] for v in ints)
 
-def encryption(sentence: str, key: str):
-    sentence = convert_str_into_digit_list(sentence)
-    key = convert_str_into_digit_list(key)
+    def encrypt(self, sentence: str, key: str) -> str:
+        sentence = self._str_to_ints(sentence)
+        key = self._str_to_ints(key)
 
-    while len(key) < len(sentence):
-        key.extend(key)
+        encrypted = [(i + k) % self._size for i, k in zip(sentence, cycle(key))]
 
-    encrypt = []
-    for s, k in zip(sentence, key):
-        comb = s + k
-        encrypt.append(comb if comb < 27 else comb - 27)
+        return self._ints_to_str(encrypted)
 
-    encrypt = convert_digit_list_into_str(encrypt)
+    def decrypt(self, sentence: str, key: str) -> str:
+        sentence = self._str_to_ints(sentence)
+        key = self._str_to_ints(key)
 
-    return encrypt
+        decrypted = [(t - k) % self._size for t, k in zip(sentence, cycle(key))]
 
-
-def un_encryption(sentence: str, key: str):
-    sentence = convert_str_into_digit_list(sentence)
-    key = convert_str_into_digit_list(key)
-
-    while len(key) < len(sentence):
-        key.extend(key)
-
-    un_encrypt = []
-    for s, k in zip(sentence, key):
-        comb = s - k
-        un_encrypt.append(comb + 27 if comb < 0 else comb if comb < 27 else comb - 27)
-
-    un_encrypt = convert_digit_list_into_str(un_encrypt)
-
-    return un_encrypt
+        return self._ints_to_str(decrypted)
 
 
 if __name__ == "__main__":
-    sentence = "this is a test with this code only spaces and lowercases letters can be encrypted"
+    cipher = Encryption("-")
+    sentence = (
+        "I won't lose too much, just myself. There are always some things that are more important than others."
+        "-- Klein Moretti 1360 LOTM"
+    )
     cryptage_key = "cryptage key"
 
-    code = encryption(sentence, cryptage_key)
-    decode = un_encryption(code, cryptage_key)
+    code = cipher.encrypt(sentence, cryptage_key)
+    decode = cipher.decrypt(code, cryptage_key)
 
     print(code, "\n\n", decode)
